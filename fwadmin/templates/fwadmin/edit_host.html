@@ -61,6 +61,20 @@
           $("#new_rule_for_host_form").attr(
                 "action", 
                 "{% url 'fwadmin:new_rule_for_host' host.id %}");
+          $("#new_rule_for_host_form").submit(function() {
+            $.ajax({
+                data: $(this).serialize(), // get the form data
+                type: $(this).attr('method'), // GET or POST
+                url: $(this).attr('action'), // the file to call
+                success: function(response) { // on success..
+                    if (response.done === true)
+                        window.location.replace(response.redirect_url)
+                    else
+                        $("#new_rule_for_host_div").html(response);
+                }
+            });
+            return false;
+          });
         });
       });
     </script>

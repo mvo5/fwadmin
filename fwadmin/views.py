@@ -1,9 +1,12 @@
 import datetime
+import json
+
 #from django.utils.translation import ugettext as _
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 
 from django.http import (
+    HttpResponse,
     HttpResponseBadRequest,
     HttpResponseRedirect,
     HttpResponseForbidden,
@@ -199,8 +202,15 @@ def new_rule_for_host(request, hostid):
                 rule.ip_protocol = stock_port.ip_protocol
                 rule.port = stock_port.number
             rule.save()
-            return HttpResponseRedirect(reverse("fwadmin:edit_host",
-                                                args=(host.id,)))
+            # redirect back to the edit_host form if we are done
+            redirect_url = reverse("fwadmin:edit_host", args=(host.id,))
+            if request.is_ajax():
+                return HttpResponse(json.dumps({"redirect_url": redirect_url,
+                                                "done": True,
+                                                }),
+                                    content_type="application/json")
+            else:
+                return HttpResponseRedirect(redirect_url)
     else:
         form = NewRuleForm()
     return render_to_response('fwadmin/new_rule.html',
