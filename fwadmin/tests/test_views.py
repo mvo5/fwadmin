@@ -234,20 +234,13 @@ class LoggedInViewsTestCase(TestCase):
             urlsplit(resp["Location"])[2],
             reverse("fwadmin:edit_host", args=(self.host.id,)))
 
+    # test rules POSTing
     def test_new_rule_for_host(self):
-        rule_name = "random rule name"
-        post_data = {"name": rule_name,
-                     "permit": False,
-                     "ip_protocol": "UDP",
-                     "port": 1337,
-                    }
+        rule_name, post_data = self._make_rule_post_test_data()
         resp = self.client.post(reverse("fwadmin:new_rule_for_host",
                                         args=(self.host.id,)),
                                 post_data)
-        # ensure we have the new rule
-        rule = ComplexRule.objects.get(name=rule_name)
-        for k, v in post_data.items():
-            self.assertEqual(getattr(rule, k), v)
+        self._assert_posted_rule_matches_database_rule(rule_name, post_data)
         # check redirect
         self.assertEqual(resp.status_code, 302)
         self.assertEqual(
@@ -255,20 +248,13 @@ class LoggedInViewsTestCase(TestCase):
             reverse("fwadmin:edit_host", args=(self.host.id,)))
 
     def test_new_rule_for_host_ajax(self):
-        rule_name = "random rule name"
-        post_data = {"name": rule_name,
-                     "permit": False,
-                     "ip_protocol": "UDP",
-                     "port": 1337,
-                    }
+        rule_name, post_data = self._make_rule_post_test_data()
         resp = self.client.post(reverse("fwadmin:new_rule_for_host",
                                         args=(self.host.id,)),
                                 post_data,
                                 HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self._assert_posted_rule_matches_database_rule(rule_name, post_data)
         # ensure we have the new rule
-        rule = ComplexRule.objects.get(name=rule_name)
-        for k, v in post_data.items():
-            self.assertEqual(getattr(rule, k), v)
         # check response is json object with the expeced ur
         self.assertEqual(resp.status_code, 200)
         response = json.loads(resp.content)
@@ -276,3 +262,19 @@ class LoggedInViewsTestCase(TestCase):
         self.assertEqual(
             response["redirect_url"],
             reverse("fwadmin:edit_host", args=(self.host.id,)))
+
+    # helpers for the rules posting
+    def _make_rule_post_test_data(self):
+        rule_name = "random rule name"
+        post_data = {"name": rule_name,
+                     "permit": False,
+                     "ip_protocol": "UDP",
+                     "port": 1337,
+                    }
+        return rule_name, post_data
+
+    def _assert_posted_rule_matches_database_rule(self, rule_name, post_data):
+        # ensure we have the new rule
+        rule = ComplexRule.objects.get(name=rule_name)
+        for k, v in post_data.items():
+            self.assertEqual(getattr(rule, k), v)
