@@ -224,5 +224,3 @@ def new_rule_for_host(request, hostid):
                                'form': form,
                               },
                               context_instance=RequestContext(request))
-
-
