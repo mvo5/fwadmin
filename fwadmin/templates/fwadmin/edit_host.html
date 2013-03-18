@@ -57,7 +57,7 @@
            because the document.URL will still be this page but the
            POST needs to go into the fwadmin:new_rule_for_host page
          */
-        $("#myModal").on("shown", function() {
+        var bind_dynamic_actions = function() {
           $("#new_rule_for_host_form").attr(
                 "action", 
                 "{% url 'fwadmin:new_rule_for_host' host.id %}");
@@ -70,13 +70,18 @@
                 success: function(response) { // on success..
                     if (response.done === true)
                         window.location.replace(response.redirect_url)
-                    else
+                    else {
                         $("#new_rule_for_host_div").html(response);
+                        // we need to re-bind our overrides when the 
+                        // page is loaded again
+                        bind_dynamic_actions();
+                    }
                 }
             });
             return false;
           });
-        });
+        }
+        $("#myModal").on("shown", bind_dynamic_actions);
       });
     </script>
     <!-- /dynamic modal form -->
