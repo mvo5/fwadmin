@@ -192,6 +192,12 @@ def new_rule_for_host(request, hostid):
     host = Host.objects.get(pk=hostid)
     if host.owner != request.user:
         return HttpResponseForbidden("you are not the owner of the host")
+    # when we use ajax to load the data, just include the bare-bone form
+    # not the header/footer stuff
+    if request.is_ajax():
+        template = 'fwadmin/new_rule_form.html'
+    else:
+        template = 'fwadmin/new_rule.html'
     if request.method == 'POST':
         form = NewRuleForm(request.POST)
         if form.is_valid():
@@ -213,8 +219,10 @@ def new_rule_for_host(request, hostid):
                 return HttpResponseRedirect(redirect_url)
     else:
         form = NewRuleForm()
-    return render_to_response('fwadmin/new_rule.html',
+    return render_to_response(template,
                               {'host': host,
                                'form': form,
                               },
                               context_instance=RequestContext(request))
+
+

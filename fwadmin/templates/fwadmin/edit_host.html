@@ -38,7 +38,7 @@
   </div>
   <div class="rules-list">
     
-    <!-- dynamic modal form -->
+    <!-- dynamic modal form for new host rule-->
     <div class="modal fade" 
          id="myModal" 
          data-remote="{% url 'fwadmin:new_rule_for_host' host.id %}">
@@ -48,7 +48,7 @@
          <h3>New rule for {{ host.name }}</h3>
        </div>
        <div class="modal-body">
-         {# taken from "fwadmin:new_rule_for_host" #}
+         {# this div is filled with the data from "new_rule_form.html" #}
        </div>
     </div>
     <script>
@@ -62,6 +62,7 @@
                 "action", 
                 "{% url 'fwadmin:new_rule_for_host' host.id %}");
           $("#new_rule_for_host_form").submit(function() {
+            console.log("submit");
             $.ajax({
                 data: $(this).serialize(), // get the form data
                 type: $(this).attr('method'), // GET or POST

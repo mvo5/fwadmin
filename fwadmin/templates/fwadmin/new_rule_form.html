@@ -1,0 +1,43 @@
+{% load url from future %}
+{% load i18n %}
+
+<div id="new_rule_for_host_div">
+{% if form.errors %}
+<p style="color: red;">
+ {% blocktrans %} Please correct the error{{ form.errors|pluralize }} below. {% endblocktrans %}
+</p>
+{% endif %}
+
+<form id="new_rule_for_host_form" action="" method="post">
+  {% csrf_token %}
+  <table>
+    {{ form.as_table }}
+  </table>
+  <div class="modal-footer">
+    <input class="btn btn-primary" type="submit" value="Add">
+  </div>
+</form>
+</div>
+
+<script type="text/javascript">                                         
+$(document).ready(function(){
+
+  // keep id_stock_port and id_port in sync
+  $("#id_stock_port").change(function() {
+    var selected_str = $("#id_stock_port option:selected").text();
+    var regexp = selected_str.match(/(\w+)(.*)\((.*)\)/);
+    var ip_protocol = regexp[1];
+    var name = regexp[2];
+    var port = regexp[3];
+    $("#id_ip_protocol").val(ip_protocol);
+    $("#id_port").val(port);
+    $("#id_name").val(name);
+  });
+
+  // reset id_stock_port when id_port changes
+  $("#id_port").change(function() {
+     $("#id_stock_port").val(0);
+  });
+
+});
+ </script>   
