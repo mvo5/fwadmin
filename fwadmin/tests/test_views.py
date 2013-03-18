@@ -72,6 +72,17 @@ class LoggedInViewsTestCase(TestCase):
         resp = self.client.get(reverse("fwadmin:new_rule_for_host",
                                        args=(self.host.id,)))
         self.assertEqual(resp.status_code, 200)
+        # the regular page has the full navbar etc
+        self.assertTrue('class="navbar"' in resp.content)
+
+    def test_new_rule_get_ajax(self):
+        resp = self.client.get(reverse("fwadmin:new_rule_for_host",
+                                       args=(self.host.id,)),
+                               HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+                               )
+        self.assertEqual(resp.status_code, 200)
+        # the ajax version of the page does only have the form
+        self.assertFalse('class="navbar"' in resp.content)
 
     def test_delete_needs_post(self):
         for action in ["delete_host", "delete_rule"]:
