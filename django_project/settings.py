@@ -127,7 +127,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
-    "sekizai.context_processors.sekizai"# sekizai extended block tags 
+    "sekizai.context_processors.sekizai", # sekizai extended block tags 
+    "fwadmin.context_processors.is_moderator",
 )
 
 MIDDLEWARE_CLASSES = (

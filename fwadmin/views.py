@@ -61,12 +61,9 @@ def index(request):
     all_hosts = Host.objects.filter(owner=request.user)
     # pass all views that the user owns too
     all_rules = ComplexRule.objects.filter(host__owner=request.user)
-    is_moderator = request.user.groups.filter(
-        name=FWADMIN_MODERATORS_USER_GROUP).count()
     return render_to_response('fwadmin/index.html',
                               {'all_hosts': all_hosts,
                                'complex_rules': all_rules,
-                               'is_moderator': is_moderator,
                               },
                               context_instance=RequestContext(request))
 
