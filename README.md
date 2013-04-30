@@ -16,6 +16,7 @@ Dependencies to run in production:
  - python-django (tested with 1.4 and 1.5)
  - python-django-auth-ldap
  - python-netaddr
+ - python-django-sekizai
  - [bower](https://github.com/twitter/bower)
 
 Dependencies for testing/development:
