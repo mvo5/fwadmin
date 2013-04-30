@@ -2,38 +2,26 @@
 {% load i18n %}
 {% load url from future %}
 
+{% block page-header %}Dashboard{% endblock %}
 {% block content %}
-
-<div class="page-header">
-  <h1>Dashboard</h1>
-</div>
-
 <div>
   <div class="row">
     <div class="span8">
-  {% if is_moderator %}
-    <h2>Welcome Moderator {{ user }}</h2>
-  {% else %}
-    <h2>Welcome {{ user }}</h2>
-  {% endif %}
+      {% if is_moderator %}
+      <h2>Welcome Moderator {{ user }}</h2>
+      {% else %}
+      <h2>Welcome {{ user }}</h2>
+      {% endif %}
     </div>
     <div class="span4">
       <h3 class="pull-right">My Hosts</h3>
     </div> 
-
-    <div class="row">
-      <div id="controls" class="span2">
-        {% if is_moderator %}
-        <a class="btn"
-           href={% url 'fwadmin:moderator_list_unapproved' %}>List Unapproved</a>
-        {% endif %}
-        <a class="btn" 
-           href={% url 'fwadmin:new_host' %}>{% trans "Create New Host" %}</a>
-      </div>
-      
-      <div class="span10">
-        {% include "fwadmin/hosts_list.html" %}
-      </div>
+  </div>
+  <hr/>
+  <div class="row">
+    <div class="span12">
+      <a class="btn btn-primary pull-right" href={% url 'fwadmin:new_host' %}>{% trans "New Host" %}</a>
+      {% include "fwadmin/_hosts_list.html" %}
     </div>
   </div>
 </div>

@@ -1,51 +1,55 @@
 {% load url from future %}
 {% load i18n %}
+{% load sekizai_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>{% block title %}Fwadmin{% endblock %}</title>
+  <title>{% block title %}Firewall-Admin{% endblock %}</title>
 
   <link rel="stylesheet" href="{{ STATIC_URL }}style.css" />
   <link rel="stylesheet" href="{{ STATIC_URL }}css/datatable.css" />
-
-  <script src="{{ STATIC_URL }}components/jquery/jquery.min.js">
-  </script>
-
-  <link rel="stylesheet" 
-        href="{{ STATIC_URL }}components/bootstrap.css/css/bootstrap.min.css" />
-  <script 
-     src="{{ STATIC_URL }}components/bootstrap.css/js/bootstrap.min.js">
-  </script> 
-
-  <script 
-     src="{{ STATIC_URL }}components/datatables/media/js/jquery.dataTables.js">
-  </script> 
-
-  <script 
-     src="{{ STATIC_URL }}js/datatable.bootstrap.js">
-  </script> 
+  <link rel="stylesheet" href="{{ STATIC_URL }}components/bootstrap.css/css/bootstrap.min.css" />
+  {% render_block 'css' %}
 </head>
-
 <body>
-  <div class="container">
-    <div class="navbar">
-      <div class="navbar-inner">
-        <ul class="nav">
-          <li><a href={% url 'fwadmin:index' %}><i class="icon-home pull-left"></i>Home</a></li>
-        </ul>
-        <ul class="nav pull-right">
-          <li><a href="/accounts/logout" class="logout">{% trans "Logout" %}</a></li>
-        </ul>
-      </div>
+  
+  <nav class="navbar navbar-fixed-top navbar-inverse">
+    <div class="navbar-inner">
+      <ul class="nav">
+        <li><a href={% url 'fwadmin:index' %}><i class="icon-home icon-white"></i>Dashboard</a></li>
+        {% if is_moderator %}
+        <li>
+          <a href="{% url 'fwadmin:moderator_list_unapproved' %}">
+            <i class="icon-list icon-white"></i>List Unapproved
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+      <ul class="nav pull-right">
+        <li><a href="/accounts/logout">{% trans "Logout" %}</a></li>
+      </ul>
     </div>
+  </nav>
+  <header class="page-header">
+    <h1>{% block page-header %}Firewall-Admin{% endblock %}</h1>
+  </header>
 
+  <section id="main" class="container">
     {% block content %}{% endblock %}
-  </div>
+  </section>
 
   <footer>
-    &copy; ZIMK 2013
+    <p><small>&copy; ZIMK 2013</small></p>
+    <ul class="unstyled">
+      <li><a href="mailto:team_shen@uni-trier.de">Contact</a></li>
+    </ul>
   </footer>
 
+  <script src="{{ STATIC_URL }}components/jquery/jquery.min.js"></script>
+  <script src="{{ STATIC_URL }}components/bootstrap.css/js/bootstrap.min.js"></script> 
+  <script src="{{ STATIC_URL }}components/datatables/media/js/jquery.dataTables.js"></script> 
+  <script src="{{ STATIC_URL }}js/datatable.bootstrap.js"></script> 
+  {% render_block 'js' %}
 </body>
 </html>

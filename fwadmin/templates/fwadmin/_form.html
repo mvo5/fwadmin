@@ -1,17 +1,13 @@
-{% extends "base.html" %}
 {% load i18n %}
-{% load sekizai_tags %}
 
-{% block page-header %}New rule for {{ host.name }}{% endblock %}
-
-{% block content %}
 {% if form.errors %}
 <div class="alert alert-error">
   {% blocktrans %} Please correct the error{{ form.errors|pluralize }} below. {% endblocktrans %}
 </div>
 {% endif %}
 
-<form id="new_rule_for_host_form" class="form-horizontal" method="post">{% csrf_token %}
+<form id="{{ id|default:"" }}" action="{{ action|default:""}}" class="form-horizontal" method="post">
+    {% csrf_token %}
     <fieldset>
         {% for field in form %}
             {% if field.errors %}
@@ -36,33 +32,6 @@
         {% endfor %}
     </fieldset>
     <div class="form-actions">
-      <a class="btn btn-danger" href="{% url 'fwadmin:edit_host' host.id %}">Cancel</a>
-      <button type="submit" class="btn btn-primary" >Submit</button>
+      <button type="submit" class="btn btn-primary" >{{ submit }}</button>
     </div>
 </form>
-
-{% addtoblock 'js' %}
-<script type="text/javascript">                                         
-$(document).ready(function(){
-
-  // keep id_stock_port and id_port in sync
-  $("#id_stock_port").change(function() {
-    var selected_str = $("#id_stock_port option:selected").text();
-    var regexp = selected_str.match(/(\w+)(.*)\((.*)\)/);
-    var ip_protocol = regexp[1];
-    var name = regexp[2];
-    var port = regexp[3];
-    $("#id_ip_protocol").val(ip_protocol);
-    $("#id_port").val(port);
-    $("#id_name").val(name);
-  });
-
-  // reset id_stock_port when id_port changes
-  $("#id_port").change(function() {
-     $("#id_stock_port").val(0);
-  });
-
-});
- </script>   
-{% endaddtoblock %}
-{% endblock %}

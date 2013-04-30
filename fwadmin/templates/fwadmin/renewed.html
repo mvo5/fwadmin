@@ -2,15 +2,14 @@
 {% load i18n %}
 {% load url from future %}
 
-{% block content %}
+{% block page-header %}Renew Host{% endblock %}
 
-<div class="page-header">
-  <h1>Renew Host</h1>
+{% block content %}
+<div class="alert alert-block alert-success">
+	<h4>{% blocktrans %}Thanks for renewing{% endblocktrans %}</h4>
+	{% blocktrans %}Host firewall active until {{ active_until }} {% endblocktrans %}
 </div>
 
-
-<p>{% blocktrans %}Thanks for renewing, host firewall active until {{ active_until }} {% endblocktrans %}</p>
-
-<a href={% url 'fwadmin:index' %}>Go back</a>
+<a class="btn btn-primary" href={% url 'fwadmin:index' %}>Go back</a>
 
 {% endblock %}

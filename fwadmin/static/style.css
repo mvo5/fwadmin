@@ -2,21 +2,19 @@ body {
     background-color: #33f5f5;
 }
 
-.page-header {
-    padding: 3em;
-    margin: 0;
+#main {
+    padding: 1em 0;
+}
+
+nav li i {
+    padding-right: 5px;
+}
+
+header.page-header {
+    margin-top: 41px;
+    padding: 2em;
     background-color: #005E9C;
     color: #ffffff;
-}
-
-.content {
-    background-color: #ffffff;
-    min-height: 350px;
-}
-
-.logout {
-    float: right;
-    padding-right: 1em;
 }
 
 .hosts-list {
@@ -28,9 +26,4 @@ footer {
     text-align: center;
     padding: 30px 0;
     border-top: 1px solid #E5E5E5;
-}
-
-#controls > * {
-    margin-bottom: 1em;
-    width: 100px;
 }

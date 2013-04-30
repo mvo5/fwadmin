@@ -1,0 +1,70 @@
+{% load url from future %}
+{% load i18n %}
+{% load sekizai_tags %}
+
+<div class="hosts-list">
+{% if all_hosts %}
+  <table class="table table-striped" id="table_my_hosts">
+    <thead>
+      <tr>
+        <th>{% trans "Host" %}</th>
+        <th>{% trans "Description" %}</th>
+        <th>{% trans "IP" %}</th>
+        <th>{% trans "Active Rules" %}
+        <th>{% trans "Approved"  %}</th>
+        <th>{% trans "Active Until" %}</th>
+        <th>{% trans "Renew Link" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for host in all_hosts  %}
+      <tr>
+        <td>{{ host.name }}</td>
+        <td>{{ host.description|truncatechars:60 }}</td>
+        <td><a href="{% url 'fwadmin:edit_host' host.pk %}">{{ host.ip }}</a></td>
+        <td>
+          {% for rule in host.get_rules_for_host %}
+            {% if not forloop.last %}
+            {{ rule.name }},
+            {% else %}
+            {{ rule.name }}
+            {% endif %}
+          {% endfor %}
+        </td>
+        <td>{{ host.approved }}</td>
+        {% if host.approved %}
+        <td>{{ host.active_until }}</td>
+        <td>
+          <form action={% url 'fwadmin:renew_host' host.pk %} 
+          method="post">
+            {% csrf_token %}
+            <input class="btn btn-warning" type="submit" value={% trans "Renew" %}>
+          </form>
+        </td>
+        {% else %}
+        <td> - </td>
+        <td> - </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>{% trans "No hosts yet."  %}</p>
+{% endif %}
+</div>
+
+{% addtoblock 'js' %}
+<script>
+  $(function() {
+    $("#table_my_hosts").dataTable({
+      "bPaginate": false,
+      "bFilter": false,
+      "bInfo": false,
+      "aoColumnDefs": [
+        { "bSortable": false, "aTargets": [ 6 ] }
+      ]
+    });
+  });
+</script>
+{% endaddtoblock %}

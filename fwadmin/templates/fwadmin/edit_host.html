@@ -1,9 +1,36 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load url from future %}
+{% load sekizai_tags %}
 
+{% block page-header %}Edit {{ host.name }} ({{ host.ip }}){% endblock %}
 {% block content %}
+<ul id="tabBar" class="nav nav-tabs">
+  <li class="active"><a href="#tab-rules" data-toggle="tab">Firewall rules</a></li>
+  <li><a href="#tab-renew" data-toggle="tab">Active until</a></li>
+  <li><a href="#tab-settings" data-toggle="tab">Settings</a></li>
+</ul>
 
+<div class="tab-content">
+  <div class="tab-pane active" id="tab-rules">
+    {% include 'fwadmin/_edit_host_fw_rule_tab.html' %}
+  </div>
+
+  <div class="tab-pane" id="tab-renew">
+    <h2>{% trans "Active until" %}</h2>
+    <p>This host is valid until {{ host.active_until }}</p>
+    {% url 'fwadmin:renew_host' host.pk as renew_url %}
+    {% include 'fwadmin/_form.html' with submit='Renew' action=renew_url form=null %}
+  </div>
+
+
+  <div class="tab-pane" id="tab-settings">
+    <h2>{% trans "Change host config" %}</h2>
+    {% include 'fwadmin/_form.html' with submit='Update'%}
+  </div>
+</div>
+
+{% addtoblock 'js' %}
 <script>
   $(function() {
     $("#table_rules").dataTable({
@@ -15,91 +42,6 @@
     });
   });
 </script>
-
-<div class="page-header">
-  <h1>Edit {{ host.name }} ({{ host.ip }})</h1>
-</div>
-
-<ul class="nav nav-tabs">
-  <li class="active"><a href="#tab-rules" data-toggle="tab">Firewall rules</a></li>
-  <li><a href="#tab-renew" data-toggle="tab">Active until</a></li>
-  <li><a href="#tab-settings" data-toggle="tab">Settings</a></li>
-</ul>
-
-<div class="tab-content">
-  <div class="tab-pane active" id="tab-rules">
-  <div class="row">  
-    <div class="span10"><h2>{% trans "Firewall rules" %}</h2></div>
-    <div class="span2">
-      <a href="{% url 'fwadmin:new_rule_for_host' host.id %}" class="btn pull-right">New Rule</a>
-    </div>
-  </div>
-  <div class="rules-list">
-    {% if rules_list %}
-    <table class="table table-condensed" id="table_rules">
-      <thead>
-      <tr>
-	<th>{% trans "Name"  %}</th>
-        <th>{% trans "Permit"  %}</th>
-        <th>{% trans "Port" %}</th>
-        <th>{% trans "Protocol" %}</th>
-	<th>{% trans "Action" %}</th>
-      </tr>
-      </thead>
-      <tbody>
-      {% for rule in rules_list  %}
-      <tr>
-        <td>{{ rule.name }}</td>
-        <td>{{ rule.permit }}</td>
-        <td>{{ rule.port }}</td>
-        <td>{{ rule.ip_protocol }}</td>
-	<td>
-	  <form	action={% url 'fwadmin:delete_rule' host.id %} 
-		method="post">
-	    {% csrf_token %}
-	    <input type="submit" value={% trans "Delete" %}>
-	  </form>
-	</td>
-      </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-    {% else %}
-    <p>{% trans "No rules."  %}</p>
-    {% endif %}
-  </div>
-</div>
-
-<div class="tab-pane" id="tab-renew">
-  <h2>{% trans "Active until" %}</h2>
-  <p>This host is valid until {{ host.active_until }}
-    <form action={% url 'fwadmin:renew_host' host.pk %} 
-	  method="post">
-      {% csrf_token %}
-      <input type="submit" value={% trans "Renew" %}>
-    </form>
-  </p>
-</div>
-
-
-<div class="tab-pane" id="tab-settings">
-  <h2>{% trans "Change host config" %}</h2>
-  {% if form.errors %}
-  <p style="color: red;">
-    {% blocktrans %} Please correct the error {{ form.errors|pluralize }} below.  {% endblocktrans %}
-  </p>
-  {% endif %}
-  
-  <form action="" method="post">
-    {% csrf_token %}
-    <table>
-      {{ form.as_table }}
-    </table>
-    <input type="submit" value="Update">
-  </form>
-</div>
-</div>
-
-
+{% endaddtoblock %}
 {% endblock %}
 

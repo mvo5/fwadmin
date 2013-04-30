@@ -1,13 +1,56 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load url from future %}
+{% load sekizai_tags %}
+
+{% block page-header %}Unapproved Hosts{% endblock %}
 
 {% block content %}
 
-<div class="page-header">
-  <h1>Unapproved Hosts</h1>
-</div>
+<h2>All unapproved hosts</h2>
+<hr />
+{% if all_hosts %}
+<table class="table" id="table_hosts">
+  <thead>
+    <tr>
+      <th>Owner</th>
+      <th>Host Description</th>
+      <th>IP</th>
+      <th>Rules</th>
+      <th>Approve Link</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for host in all_hosts  %}
+    <tr>
+      <td>{{ host.owner }}</td>
+      <td>{{ host.name }}</td>
+      <td>{{ host.ip }}</td>
+      <td>
+        {# XXX: meeeeh, is there a better way to do this than to loop here N-times ? #}
+        {% for rule in complex_rules %}
+        {% if rule.host == host %}
+        <p>name:{{ rule.name }} from:{{ rule.from_net }} permit:{{ rule.permit }} protocol:{{ rule.ip_protocol }} port:{{ rule.port }}
+        </p>
+        {% endif %}
+        {% endfor %}
+      </td>
+      <td> 
+        <form	action={% url 'fwadmin:moderator_approve_host' host.pk %}
+        method="post">
+        {% csrf_token %}
+        <input class="btn btn-warning" type="submit" value={% trans "Approve" %}>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No unapproved hosts.</p>
+{% endif %}
 
+{% addtoblock 'js' %}
 <script>
   $(function() {
     $("#table_hosts").dataTable({
@@ -18,47 +61,5 @@
     });
   });
 </script>
-
-<h2>All unapproved hosts</h2>
-{% if all_hosts %}
-    <table class="table" id="table_hosts">
-      <thead>
-      <tr>
-        <th>Owner</th>
-        <th>Host Description</th>
-        <th>IP</th>
-        <th>Rules</th>
-        <th>Approve Link</th>
-      </tr>
-      </thead>
-      <tbody>
-      {% for host in all_hosts  %}
-      <tr>
-        <td>{{ host.owner }}</td>
-        <td>{{ host.name }}</td>
-        <td>{{ host.ip }}</td>
-        <td>
-	  {# XXX: meeeeh, is there a better way to do this than to loop here N-times ? #}
-	  {% for rule in complex_rules %}
-	    {% if rule.host == host %}
-	      <p>name:{{ rule.name }} from:{{ rule.from_net }} permit:{{ rule.permit }} protocol:{{ rule.ip_protocol }} port:{{ rule.port }}
-	      </p>
-	    {% endif %}
-	  {% endfor %}
-        </td>
-        <td> 
-	  <form	action={% url 'fwadmin:moderator_approve_host' host.pk %}
-		method="post">
-	    {% csrf_token %}
-	    <input type="submit" value={% trans "Approve" %}>
-	  </form>
-	</td>
-      </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-{% else %}
-    <p>No unapproved hosts.</p>
-{% endif %}
-
+{% endaddtoblock %}
 {% endblock %}
