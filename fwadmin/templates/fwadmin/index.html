@@ -13,22 +13,13 @@
     <div class="span8">
   {% if is_moderator %}
     <h2>Welcome Moderator {{ user }}</h2>
-    <p>SuperpowerZ:
-      <a class="btn"
-         href="{% url 'fwadmin:moderator_list_unapproved' %}">List Unapproved</a>
-    </p>
-  </div>
   {% else %}
     <h2>Welcome {{ user }}</h2>
   {% endif %}
-
-
-
-  <p>This is the firewall config tool.</p>
-  <div>
-    <a class="btn" 
-       href="{% url 'fwadmin:new_host' %}">{% trans "Create New Host" %}</a>
   </div>
+  <div class="span4">
+    <h3 class="pull-right">My Hosts</h3>
+  </div> 
 
   <div class="row">
     <div id="controls" class="span2">
