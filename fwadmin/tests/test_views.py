@@ -68,6 +68,10 @@ class LoggedInViewsTestCase(TestCase):
         resp = self.client.get(reverse("fwadmin:new_host"))
         self.assertEqual(resp.status_code, 200)
 
+    def test_edit_host_get(self):
+        resp = self.client.get(reverse("fwadmin:edit_host", args=(1,)))
+        self.assertEqual(resp.status_code, 200)
+
     def test_new_rule_get(self):
         resp = self.client.get(reverse("fwadmin:new_rule_for_host",
                                        args=(self.host.id,)))
