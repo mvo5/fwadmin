@@ -24,13 +24,15 @@ class BaseRulesWriter:
         # complex rules
         list_nr = settings.FWADMIN_ACCESS_LIST_NR
         for complex_rule in ComplexRule.objects.filter(host=host):
-            s = self._get_fw_string(list_nr=list_nr,
-                                    permit=complex_rule.permit,
-                                    type=complex_rule.ip_protocol,
-                                    from_net=complex_rule.from_net,
-                                    to_ip=host.ip,
-                                    port=complex_rule.port)
-            l.append(s)
+            for from_net in complex_rule.from_net.split(","):
+                if from_net:
+                    s = self._get_fw_string(list_nr=list_nr,
+                                            permit=complex_rule.permit,
+                                            type=complex_rule.ip_protocol,
+                                            from_net=from_net,
+                                            to_ip=host.ip,
+                                            port=complex_rule.port)
+                    l.append(s)
         return l
 
 

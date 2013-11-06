@@ -164,6 +164,26 @@ class ManagementCommandsTestCase(MyBaseTest):
                  FWADMIN_ACCESS_LIST_NR,
              ])
 
+    @patch("fwadmin.management.commands.genrules.Command._write_rules")
+    def test_gen_rules_multiple_from(self, mock_f):
+        """ Ensure complex rules are written """
+        ComplexRule.objects.create(
+            host=self.host,
+            # the ",,," are on purpose, ensure we don't write bogus rules
+            # if the user enters wrong data
+            name="complex", from_net="192.168.2.0/24,192.168.4.0/24,,,",
+            permit=False,
+            ip_protocol="UDP", port=53)
+        self.cmd.print_firewall_rules(self.writer)
+        mock_f.assert_called_with(
+            ["! fw rules for %s (%s) owned by %s" % (
+                    self.host.name, self.host.ip, self.owner.username),
+             "access-list %s deny UDP 192.168.2.0/24 host 192.168.1.1 eq 53" %
+                 FWADMIN_ACCESS_LIST_NR,
+             "access-list %s deny UDP 192.168.4.0/24 host 192.168.1.1 eq 53" %
+                 FWADMIN_ACCESS_LIST_NR,
+             ])
+
 
 class GenRulesUfwTestCase(MyBaseTest):
 
