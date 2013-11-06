@@ -64,6 +64,7 @@
       <tr>
 	<th>{% trans "Name"  %}</th>
         <th>{% trans "Permit"  %}</th>
+        <th>{% trans "From network" %}</th>
         <th>{% trans "Port" %}</th>
         <th>{% trans "Protocol" %}</th>
 	<th>{% trans "Action" %}</th>
@@ -74,6 +75,7 @@
       <tr>
         <td>{{ rule.name }}</td>
         <td>{{ rule.permit }}</td>
+        <td>{{ rule.from_net }}</td>
         <td>{{ rule.port }}</td>
         <td>{{ rule.ip_protocol }}</td>
 	<td>
