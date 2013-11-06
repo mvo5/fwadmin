@@ -50,13 +50,14 @@ class NewRuleForm(ModelForm):
         port = cleaned_data.get("port")
         stock_port = cleaned_data.get("stock_port")
         # XXX: no test for this yet
-        from_net = cleaned_data.get("from_net")
-        if from_net and from_net != "any":
-            try:
-                net = netaddr.IPNetwork(from_net)
-                net  # pyflakes
-            except netaddr.AddrFormatError:
-                raise forms.ValidationError(_("Invalid network address"))
+        from_net_list = cleaned_data.get("from_net")
+        if from_net_list and from_net_list != "any":
+            for from_net in from_net_list.split(","):
+                try:
+                    net = netaddr.IPNetwork(from_net)
+                    net  # pyflakes
+                except netaddr.AddrFormatError:
+                    raise forms.ValidationError(_("Invalid network address"))
         if not (port or stock_port):
             raise forms.ValidationError(
                 _("Need a port number or a stock port"))

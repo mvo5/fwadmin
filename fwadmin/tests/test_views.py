@@ -227,6 +227,7 @@ class LoggedInViewsTestCase(TestCase):
                      "permit": False,
                      "ip_protocol": "UDP",
                      "port": 1337,
+                     "from_net": "192.168.1.0/24,192.168.2.0/24",
                     }
         resp = self.client.post(reverse("fwadmin:new_rule_for_host",
                                         args=(self.host.id,)),
