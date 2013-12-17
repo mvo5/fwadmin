@@ -20,12 +20,17 @@ FWADMIN_HOST_URL_TEMPLATE = "https://fwadmin.uni-trier.de%(url)s"
 
 # XXX: make all this part of a settings module in the DB?
 FWADMIN_EMAIL_FROM="fwadmin@uni-trier.de"
-FWADMIN_WARN_EXPIRE_DAYS=7
+FWADMIN_WARN_EXPIRE_DAYS=30
+
+# figure out the gender of the email opening via the ldap user initials 
+# attribute
+LDAP_USER_INITIALS_MALE_MARKER = "m"
+LDAP_USER_INITIALS_FEMALE_MARKER = "w"
 
 # the cisco access list number we use
 FWADMIN_ACCESS_LIST_NR = 120
 # the LDAP/django group that is allowed to use the tool 
-FWADMIN_ALLOWED_USER_GROUP = "Mitarb"
+FWADMIN_ALLOWED_USER_GROUP = "rdsmit"
 # the LDAP/django group for the moderation
 FWADMIN_MODERATORS_USER_GROUP = "G-zentrale-systeme"
 # the default time a host is active if when created/renewed

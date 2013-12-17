@@ -14,6 +14,39 @@ from fwadmin.models import Host
 # run command as:
 #   python manage.py warnexpire 14
 
+def get_gender_for_username_from_ldap(username):
+    if settings.FWADMIN_REAL_LDAP:
+        # use ldap to determine the gender
+        from django_auth_ldap.backend import LDAPBackend
+        backend = LDAPBackend()
+        user = backend.populate_user(username)
+        if user:
+            gender = user.ldap_user.attrs["initials"][0].strip()
+            if gender.lower() == settings.LDAP_USER_INITIALS_MALE_MARKER:
+                return "male"
+            elif gender.lower() == settings.LDAP_USER_INITIALS_FEMALE_MARKER: 
+                return "female"
+    return "unknown"
+
+
+def get_opening(host):
+    gender = get_gender_for_username_from_ldap(host.owner.username)
+    if gender == "male":
+        # TRANSLATOR: gender "male"
+        return _("Dear Mr. %(user)s,") % {
+            'user': host.owner.username,
+        }
+    elif gender == "female":
+        # TRANSLATOR: gender "femail"
+        return _("Dear Mrs. %(user)s,") % {
+            'user': host.owner.username,
+        }
+    else:
+        # TRANSLATOR: gender unknown
+        return _("Dear %(user)s,") % {
+            'user': host.owner.username,
+        }
+
 
 def send_renew_mail(host):
     url = settings.FWADMIN_HOST_URL_TEMPLATE % {
@@ -21,13 +54,14 @@ def send_renew_mail(host):
         }
     # the text
     subject = _("Firewall config for '%s'") % host.name
-    body = _("""Dear %(user)s,
+    body = _("""%(opening)s
 
 The firewall config for machine: '%(host)s' (%(ip)s) will expire at
 '%(expire_date)s'.
 
 Please click on %(url)s to renew.
-""") % {'user': host.owner.username,
+""") % {
+        'opening': get_opening(host),
         'host': host.name,
         'ip': host.ip,
         'expire_date': host.active_until,

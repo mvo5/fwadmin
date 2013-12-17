@@ -2,9 +2,14 @@ import datetime
 from django.test import TestCase
 from StringIO import StringIO
 
-from mock import patch
+from mock import (
+    Mock,
+    patch,
+)
 
 from django.core.urlresolvers import reverse
+from django.conf import settings
+
 from fwadmin.management.commands.genrules import (
     Command as GenrulesCommand,
 )
@@ -14,6 +19,7 @@ from fwadmin.management.commands.disableinactive import (
 from fwadmin.management.commands.warnexpire import (
     Command as WarnExpireCommand,
     send_renew_mail,
+    get_opening,
 )
 from fwadmin.management.commands.moderationnag import (
     send_moderation_nag_mail,
@@ -115,6 +121,19 @@ Please click on https://fwadmin.uni-trier.de%s to renew.
         mock_f.assert_called_with(
             subject, body, FWADMIN_EMAIL_FROM,
             [self.host.owner.email])
+
+    @patch("fwadmin.management.commands.warnexpire"
+           ".get_gender_for_username_from_ldap")
+    def test_send_renew_mail_opening(self, mock_f):
+        """Ensure we do send mails"""
+        test_list = [ 
+            ("male", "Dear Mr. %s," % self.host.owner.username),
+            ("female", "Dear Mrs. %s," % self.host.owner.username),
+            ("unknown", "Dear %s," % self.host.owner.username),
+        ]
+        for gender, opening in test_list:
+            mock_f.return_value = gender
+            self.assertEqual(get_opening(self.host), opening)
 
 
 class ManagementCommandsTestCase(MyBaseTest):
