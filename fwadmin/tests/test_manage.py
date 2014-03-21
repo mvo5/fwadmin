@@ -167,8 +167,8 @@ class ManagementCommandsTestCase(MyBaseTest):
                     self.host.ip,
                     self.owner.username,
                     self.host.created_at),
-                 "access-list %s deny UDP 192.168.2.0/24 host 192.168.1.1 "
-                 "eq 53" % FWADMIN_ACCESS_LIST_NR,
+                 "access-list %s deny UDP 192.168.2.0 0.0.0.255 "
+                 "host 192.168.1.1 eq 53" % FWADMIN_ACCESS_LIST_NR,
              ])
         )
 
@@ -189,8 +189,8 @@ class ManagementCommandsTestCase(MyBaseTest):
                     self.host.ip,
                     self.owner.username,
                     self.host.created_at),
-                 "access-list %s deny TCP 192.168.2.0/24 host 192.168.1.1 "
-                 "range 6000 6100" % FWADMIN_ACCESS_LIST_NR,
+                 "access-list %s deny TCP 192.168.2.0 0.0.0.255 "
+                 "host 192.168.1.1 range 6000 6100" % FWADMIN_ACCESS_LIST_NR,
              ])
         )
 
@@ -218,7 +218,7 @@ class ManagementCommandsTestCase(MyBaseTest):
             self.host.ip,
             self.owner.username,
             self.host.created_at)
-        rule_1 = "access-list %s deny UDP 192.168.2.0/24 host "\
+        rule_1 = "access-list %s deny UDP 192.168.2.0 0.0.0.255 host "\
                  "192.168.1.1 eq 53" % FWADMIN_ACCESS_LIST_NR
         self.assertEqual(
             mock_f.getvalue(),

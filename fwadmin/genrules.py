@@ -1,5 +1,7 @@
 import datetime
 
+import netaddr
+
 from django.conf import settings
 from fwadmin.models import (
     ComplexRule,
@@ -13,7 +15,7 @@ class BaseRulesWriter:
 
     COMMENT_CHAR = "#"
 
-    def _get_fw_string(list_nr, permit, type, from_net, to_ip, port):
+    def _get_fw_string(list_nr, permit, type, from_net_str, to_ip, port):
         raise Exception("NotImplemented")
 
     def get_rules_list(self, host):
@@ -30,7 +32,7 @@ class BaseRulesWriter:
             s = self._get_fw_string(list_nr=list_nr,
                                     permit=complex_rule.permit,
                                     type=complex_rule.ip_protocol,
-                                    from_net=complex_rule.from_net,
+                                    from_net_str=complex_rule.from_net,
                                     to_ip=host.ip,
                                     port_range=complex_rule.port_range)
             l.append(s)
@@ -41,13 +43,13 @@ class UfwRulesWriter(BaseRulesWriter):
 
     COMMENT_CHAR = "#"
 
-    def _get_fw_string(self, list_nr, permit, type, from_net, to_ip,
+    def _get_fw_string(self, list_nr, permit, type, from_net_str, to_ip,
                        port_range):
         # ufw expects a lower case protocol
         type = type.lower()
         # note that list_nr is not used for ufw
         d = {'type': type,
-             'from_net': from_net,
+             'from_net': from_net_str,
              'to_ip': to_ip,
              'port_range': "",
             }
@@ -67,12 +69,23 @@ class CiscoRulesWriter(BaseRulesWriter):
 
     COMMENT_CHAR = "!"
 
-    def _get_fw_string(self, list_nr, permit, type, from_net, to_ip,
+    def _get_fw_string(self, list_nr, permit, type, from_net_str, to_ip,
                        port_range):
+        # construct the "from_net" network string
+        if from_net_str == "any":
+            from_net_cisco = "any"
+        else:
+            from_net = netaddr.IPNetwork(from_net_str)
+            # the netmask of the cisco is inverted
+            netmask_cisco = (from_net.netmask ^
+                             netaddr.IPAddress("255.255.255.255"))
+            # cisco expects the from_net in the form of
+            #  "136.199.0.0 0.0.255.255"
+            from_net_cisco = "%s %s" % (from_net.ip, netmask_cisco)
         # HRM, ugly and lacks tests!
         d = {'list_nr': list_nr,
              'type': type,
-             'from_net': from_net,
+             'from_net': from_net_cisco,
              'to_ip': to_ip,
              'port_range': "",
             }
